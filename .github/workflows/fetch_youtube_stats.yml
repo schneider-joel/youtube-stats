@@ -1,13 +1,5 @@
-name: Fetch YouTube Stats
-
-on:
-  schedule:
-    - cron: "0 */12 * * *"  # Ejecuta cada 12 horas
-  workflow_dispatch: # Permite ejecutarlo manualmente en GitHub
-
 jobs:
   fetch-data:
-    runs-on: ubuntu-latest
     steps:
       - name: Clonar el repositorio
         uses: actions/checkout@v4
@@ -15,10 +7,10 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: '18'
 
       - name: Instalar dependencias
-        run: npm install node-fetch@2
+        run: npm install
 
       - name: Ejecutar el script
         run: node fetch_youtube_stats.js
@@ -31,5 +23,5 @@ jobs:
       - name: Subir cambios a GitHub
         run: |
           git add youtube_stats.json
-          git commit -m "🔄 Actualización automática de datos de YouTube"
+          git commit -m "📊 Actualización automática de datos de YouTube"
           git push
