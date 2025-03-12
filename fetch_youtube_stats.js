@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import fs from "fs/promises";
 import fetch from "node-fetch";
 
 // 🔹 Configuración de YouTube
