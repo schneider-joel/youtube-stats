@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import { writeFileSync } from "fs";
 import fetch from "node-fetch";
 
 // 🔹 Configuración de YouTube
@@ -53,8 +53,6 @@ async function fetchTopVideos() {
     );
 }
 
-
-
 // 🔹 Función principal para obtener y guardar los datos
 async function fetchYouTubeStats() {
     console.log("📡 Obteniendo datos de YouTube...");
@@ -70,7 +68,7 @@ async function fetchYouTubeStats() {
         lastUpdated: new Date().toISOString(),
     };
 
-    fs.writeFileSync(STATS_FILE, JSON.stringify(data, null, 2));
+    writeFileSync(STATS_FILE, JSON.stringify(data, null, 2));
     console.log("💾 Datos guardados en youtube_stats.json");
 }
 
