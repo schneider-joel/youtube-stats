@@ -24,9 +24,9 @@ async function fetchChannelStats() {
     };
 }
 
-// 🔹 Función para obtener los 6 videos más vistos
+// 🔹 Función para obtener los 6 videos más vistos con su cantidad de vistas
 async function fetchTopVideos() {
-    const url = `https://www.googleapis.com/youtube/v3/search?part=id,snippet&channelId=${CHANNEL_ID}&maxResults=30&order=viewCount&type=video&key=${API_KEY}`;
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&maxResults=6&order=viewCount&type=video&key=${API_KEY}`;
     const response = await fetch(url);
     const data = await response.json();
 
@@ -35,26 +35,44 @@ async function fetchTopVideos() {
         return [];
     }
 
-    return data.items.slice(0, 6).map(video => ({
-        title: video.snippet.title,
-        videoId: video.id.videoId,
-        thumbnail: video.snippet.thumbnails.medium.url
-    }));
+    return await Promise.all(
+        data.items.map(async (video) => {
+            const videoId = video.id.videoId;
+            const statsUrl = `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoId}&key=${API_KEY}`;
+            const statsResponse = await fetch(statsUrl);
+            const statsData = await statsResponse.json();
+            const views = statsData.items?.[0]?.statistics?.viewCount || "0";
+
+            return {
+                title: video.snippet.title,
+                views: parseInt(views).toLocaleString(),
+                url: `https://www.youtube.com/watch?v=${videoId}`,
+                thumbnail: video.snippet.thumbnails.medium.url,
+            };
+        })
+    );
 }
 
-// 🔹 Ejecutamos las funciones y guardamos los datos en el JSON
-async function updateYouTubeStats() {
-    console.log("📡 Obteniendo datos de YouTube...");
 
+
+// 🔹 Función principal para obtener y guardar los datos
+async function fetchYouTubeStats() {
+    console.log("📡 Obteniendo datos de YouTube...");
+    
     const stats = await fetchChannelStats();
     const topVideos = await fetchTopVideos();
 
     if (!stats) return;
 
-    const data = { ...stats, topVideos, lastUpdated: new Date().toISOString() };
+    const data = {
+        ...stats,
+        topVideos,
+        lastUpdated: new Date().toISOString(),
+    };
 
     fs.writeFileSync(STATS_FILE, JSON.stringify(data, null, 2));
-    console.log("✅ Datos guardados en", STATS_FILE);
+    console.log("💾 Datos guardados en youtube_stats.json");
 }
 
-updateYouTubeStats();
+// 🔹 Ejecutar la función
+fetchYouTubeStats();
