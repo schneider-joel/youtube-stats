@@ -2,8 +2,8 @@ name: Fetch YouTube Stats
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Ejecuta cada hora
-  workflow_dispatch:  # Permite ejecutar manualmente el workflow desde GitHub
+    - cron: '0 */12 * * *'  # Runs every 12 hours
+  workflow_dispatch:  # Allows manual execution from GitHub
 
 jobs:
   fetch-data:
@@ -30,7 +30,9 @@ jobs:
           git config --global user.email "schneidermenajoel@gmail.com"
 
       - name: Subir cambios a GitHub
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git add youtube_stats.json
-          git commit -m "📊 Actualización automática de datos de YouTube" || echo "No hay cambios para hacer commit"
-          git push
+          git commit -m "📊 Actualización automática de datos de YouTube"
+          git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git HEAD:main
