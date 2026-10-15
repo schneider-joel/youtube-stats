@@ -2,7 +2,11 @@ import { writeFileSync } from "fs";
 import fetch from "node-fetch";
 
 // 🔹 Configuración de YouTube
-const API_KEY = "AIzaSyB6yx6m9giPv-h9odvDzj5geBOGR2fDbY4";
+const API_KEY = process.env.YOUTUBE_API_KEY; // secret del repo (Settings → Secrets → Actions)
+if (!API_KEY) {
+    console.error("⚠️ ERROR: falta YOUTUBE_API_KEY.");
+    process.exit(1);
+}
 // Un JSON por canal (mismo formato). skipShorts: top sin Shorts (más de 3 min) y ordenado por las vistas reales,
 // porque el orden por vistas del buscador de YouTube no siempre está al día.
 const CHANNELS = [
