@@ -21,7 +21,9 @@ jobs:
       - name: Instalar dependencias
         run: npm ci  # Usa 'ci' en lugar de 'install' para GitHub Actions
 
-      - name: Ejecutar el script
+         - name: Ejecutar el script
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: node fetch_youtube_stats.js
 
       - name: Configurar Git
